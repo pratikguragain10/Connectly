@@ -1,0 +1,55 @@
+<div class="comment" id="comment-{{ comment.id }}">
+
+  <strong>{{ comment.user.username }}</strong>
+  <span class="comment-text" id="comment-text-{{ comment.id }}">
+    {{ comment.content }}
+  </span>
+
+  <div class="comment-actions">
+    <button
+      class="comment-like-btn {% if comment.liked %}liked{% endif %}"
+      onclick="toggleCommentLike({{ comment.id }}, this)"
+      type="button"
+    >
+      👍 <span>{{ comment.likes.count }}</span>
+    </button>
+
+    <button type="button" onclick="toggleReplyForm({{ comment.id }})">
+      Reply
+    </button>
+
+    {% if comment.user == request.user %}
+      <button type="button" onclick="showEditForm({{ comment.id }})">Edit</button>
+      <button type="button" onclick="deleteComment({{ comment.id }})">Delete</button>
+    {% endif %}
+  </div>
+
+  <!-- EDIT -->
+  <input
+    type="text"
+    id="edit-form-{{ comment.id }}"
+    value="{{ comment.content }}"
+    style="display:none;"
+    onkeydown="saveEdit(event, {{ comment.id }})"
+  >
+
+  <!-- REPLY FORM -->
+  <form
+    class="reply-form"
+    id="reply-form-{{ comment.id }}"
+    style="display:none;"
+    onsubmit="submitReply(event, {{ post.id }}, {{ comment.id }})"
+  >
+    <input type="text" placeholder="Write a reply..." required>
+  </form>
+
+  <!-- PROPER RECURSION -->
+  {% if comment.replies.all %}
+    <div class="replies">
+      {% for reply in comment.replies.all %}
+        {% include "partials/comment.html" with comment=reply post=post level=level|add:1 %}
+      {% endfor %}
+    </div>
+  {% endif %}
+
+</div>

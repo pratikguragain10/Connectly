@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- ================= CREATE POST ================= -->
+<div class="post-box">
+  <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' %}">
+    {% csrf_token %}
+
+    <textarea
+      name="content"
+      placeholder="What's on your mind, {{ request.user.username }}?"
+      rows="3"
+      class="post-textarea"
+    ></textarea>
+
+    <input type="file" name="image" id="imageInput" accept="image/*" hidden>
+    <input type="file" name="video" id="videoInput" accept="video/*" hidden>
+
+    <!-- MEDIA PREVIEW -->
+    <div class="media-preview" id="mediaPreview" style="display:none;">
+      <button type="button" class="media-remove-btn" onclick="clearMedia()">✕</button>
+      <img id="previewImage" style="display:none;">
+      <video id="previewVideo" controls style="display:none;"></video>
+    </div>
+
+    <div class="post-actions">
+      <button type="button" onclick="openImage()">📷 Photo</button>
+      <button type="button" onclick="openVideo()">🎥 Video</button>
+      <button type="submit" class="post-btn">Post</button>
+    </div>
+  </form>
+</div>
+
+<!-- ================= POSTS ================= -->
+{% for post in posts %}
+<div class="post-card">
+
+  <!-- HEADER -->
+  <div class="post-header">
+    <strong>{{ post.user.username }}</strong>
+
+    {% if post.user == request.user %}
+    <div class="post-menu">
+      <button
+        class="menu-btn"
+        onclick="event.stopPropagation(); toggleMenu({{ post.id }})"
+      >
+        ⋯
+      </button>
+
+      <div
+        class="menu-dropdown"
+        id="menu-{{ post.id }}"
+        onclick="event.stopPropagation()"
+      >
+        <a href="{% url 'edit_post' post.id %}">Edit</a>
+        <a href="{% url 'delete_post' post.id %}" class="danger">Delete</a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  {% if post.content %}
+    <p>{{ post.content }}</p>
+  {% endif %}
+
+  {% if post.image %}
+    <img src="{{ post.image.url }}" class="post-media">
+  {% endif %}
+
+  {% if post.video %}
+    <video controls class="post-media">
+      <source src="{{ post.video.url }}">
+    </video>
+  {% endif %}
+
+  <!-- FOOTER -->
+  <div class="post-footer">
+    <button
+      type="button"
+      class="like-btn {% if post.liked %}liked{% endif %}"
+      onclick="toggleLike({{ post.id }}, this)"
+    >
+      👍 Like <span id="likes-{{ post.id }}">{{ post.likes.count }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="comment-btn"
+      onclick="toggleComments({{ post.id }})"
+    >
+      💬 Comment
+    </button>
+  </div>
+
+  <!-- ================= COMMENTS ================= -->
+  <div class="comments-wrapper" id="comments-{{ post.id }}" style="display:none;">
+    <div class="comments" id="comments-list-{{ post.id }}">
+      {% for comment in post.root_comments %}
+        {% include "partials/comment.html" with comment=comment post=post level=0 %}
+      {% endfor %}
+    </div>
+
+    <form onsubmit="submitComment(event, {{ post.id }})" class="comment-form">
+      <input type="text" placeholder="Write a comment..." required>
+    </form>
+  </div>
+
+</div>
+{% empty %}
+<p>No posts yet.</p>
+{% endfor %}
+
+<!-- ================= JS ================= -->
+<script>
+/* ---------- CSRF ---------- */
+function getCSRFToken() {
+  return document.cookie
+    .split("; ")
+    .find(row => row.startsWith("csrftoken="))
+    ?.split("=")[1];
+}
+
+/* ---------- MEDIA PREVIEW ---------- */
+const imageInput = document.getElementById("imageInput");
+const videoInput = document.getElementById("videoInput");
+const mediaPreview = document.getElementById("mediaPreview");
+const previewImage = document.getElementById("previewImage");
+const previewVideo = document.getElementById("previewVideo");
+
+function openImage() {
+  videoInput.value = "";
+  imageInput.click();
+}
+
+function openVideo() {
+  imageInput.value = "";
+  videoInput.click();
+}
+
+imageInput.addEventListener("change", e => {
+  if (!e.target.files[0]) return;
+  previewVideo.style.display = "none";
+  previewImage.src = URL.createObjectURL(e.target.files[0]);
+  previewImage.style.display = "block";
+  mediaPreview.style.display = "block";
+});
+
+videoInput.addEventListener("change", e => {
+  if (!e.target.files[0]) return;
+  previewImage.style.display = "none";
+  previewVideo.src = URL.createObjectURL(e.target.files[0]);
+  previewVideo.style.display = "block";
+  mediaPreview.style.display = "block";
+});
+
+function clearMedia() {
+  previewImage.src = "";
+  previewVideo.src = "";
+  previewImage.style.display = "none";
+  previewVideo.style.display = "none";
+  mediaPreview.style.display = "none";
+  imageInput.value = "";
+  videoInput.value = "";
+}
+
+/* ---------- MENU FIX (IMPORTANT) ---------- */
+let openMenuId = null;
+
+function toggleMenu(postId) {
+  const menu = document.getElementById(`menu-${postId}`);
+
+  if (openMenuId === postId) {
+    menu.style.display = "none";
+    openMenuId = null;
+    return;
+  }
+
+  document.querySelectorAll(".menu-dropdown").forEach(m => {
+    m.style.display = "none";
+  });
+
+  menu.style.display = "block";
+  openMenuId = postId;
+}
+
+document.addEventListener("click", () => {
+  document.querySelectorAll(".menu-dropdown").forEach(m => {
+    m.style.display = "none";
+  });
+  openMenuId = null;
+});
+
+/* ---------- COMMENTS ---------- */
+function toggleComments(postId) {
+  const box = document.getElementById(`comments-${postId}`);
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+/* ---------- LIKES ---------- */
+function toggleLike(postId, btn) {
+  fetch(`/posts/${postId}/like/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRFToken() }
+  })
+  .then(res => res.json())
+  .then(data => {
+    btn.classList.toggle("liked", data.liked);
+    document.getElementById(`likes-${postId}`).innerText = data.likes_count;
+  });
+}
+
+function toggleCommentLike(commentId, btn) {
+  fetch(`/comment-like/${commentId}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRFToken() }
+  })
+  .then(res => res.json())
+  .then(data => {
+    btn.classList.toggle("liked", data.liked);
+    btn.querySelector("span").innerText = data.likes_count;
+  });
+}
+
+/* ---------- COMMENTS AJAX ---------- */
+function submitComment(event, postId) {
+  event.preventDefault();
+  const input = event.target.querySelector("input");
+
+  fetch(`/comment/add/${postId}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRFToken(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `content=${encodeURIComponent(input.value)}`
+  })
+  .then(res => res.text())
+  .then(html => {
+    document
+      .getElementById(`comments-list-${postId}`)
+      .insertAdjacentHTML("beforeend", html);
+    input.value = "";
+  });
+}
+
+function submitReply(event, postId, parentId) {
+  event.preventDefault();
+  const input = event.target.querySelector("input");
+
+  fetch(`/comment/add/${postId}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRFToken(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `content=${encodeURIComponent(input.value)}&parent=${parentId}`
+  })
+  .then(res => res.text())
+  .then(html => {
+    event.target.insertAdjacentHTML("afterend", html);
+    event.target.style.display = "none";
+    input.value = "";
+  });
+}
+
+/* ---------- EDIT / DELETE COMMENTS ---------- */
+function showEditForm(id) {
+  document.getElementById(`edit-form-${id}`).style.display = "block";
+}
+
+function saveEdit(event, id) {
+  if (event.key !== "Enter") return;
+
+  fetch(`/comment/edit/${id}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRFToken(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `content=${encodeURIComponent(event.target.value)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById(`comment-text-${id}`).innerText = data.content;
+    document.getElementById(`edit-form-${id}`).style.display = "none";
+  });
+}
+
+function deleteComment(id) {
+  fetch(`/comment/delete/${id}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRFToken() }
+  })
+  .then(() => {
+    document.getElementById(`comment-${id}`).remove();
+  });
+}
+
+function toggleReplyForm(id) {
+  const f = document.getElementById(`reply-form-${id}`);
+  f.style.display = f.style.display === "block" ? "none" : "block";
+}
+</script>
+
+{% endblock %}
+

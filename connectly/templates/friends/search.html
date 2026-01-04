@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<div class="search-page">
+
+  <!-- SEARCH CARD -->
+  <div class="search-card">
+    <h3>Search people</h3>
+
+    <form method="GET" action="{% url 'user_search' %}">
+      <input
+        type="text"
+        name="q"
+        value="{{ query }}"
+        placeholder="Search by username"
+        class="search-input"
+      >
+    </form>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="search-results">
+
+    {% if users %}
+      {% for user in users %}
+        <div class="user-result">
+
+          <!-- AVATAR -->
+          <img
+            src="{{ user.profile.profile_pic.url|default:'/static/images/default-avatar.png' }}"
+            class="user-avatar"
+            alt="avatar"
+          >
+
+          <!-- INFO -->
+          <div class="user-info">
+            <strong>{{ user.username }}</strong>
+          </div>
+
+          <!-- ACTION -->
+          <a
+            href="{% url 'profile' user.username %}"
+            class="btn secondary"
+          >
+            View Profile
+          </a>
+
+        </div>
+      {% endfor %}
+    {% elif query %}
+      <p class="muted">No users found.</p>
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock %}
+

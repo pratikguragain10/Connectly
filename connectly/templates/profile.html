@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+
+<!-- ================= PROFILE COVER ================= -->
+<div class="profile-cover">
+  {% if profile.cover_photo %}
+    <img src="{{ profile.cover_photo.url }}" class="cover-img">
+  {% else %}
+    <div class="cover-placeholder"></div>
+  {% endif %}
+
+  {% if is_owner %}
+    <form method="POST" enctype="multipart/form-data" class="cover-edit-form">
+      {% csrf_token %}
+      <input type="file" name="cover_photo" id="coverUpload" hidden>
+      <label for="coverUpload" class="cover-edit-btn">📷 Edit cover</label>
+    </form>
+  {% endif %}
+</div>
+
+<!-- ================= PROFILE HEADER ================= -->
+<div class="profile-header">
+
+  <div class="profile-avatar">
+    {% if profile.profile_pic %}
+      <img src="{{ profile.profile_pic.url }}">
+    {% else %}
+      <img src="{% static 'images/default-avatar.png' %}">
+    {% endif %}
+
+    {% if is_owner %}
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="profile_pic" id="avatarUpload" hidden>
+        <label for="avatarUpload" class="avatar-edit-btn">✏️</label>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="profile-meta">
+    <h2>{{ profile.user.username }}</h2>
+    <p>{{ friends_count }} friends</p>
+  </div>
+
+  {% if not is_owner %}
+  <div class="profile-actions">
+    {% if friendship_status == "none" %}
+      <button class="btn primary" onclick="sendRequest({{ profile.user.id }})">Add Friend</button>
+    {% elif friendship_status == "request_sent" %}
+      <button class="btn secondary" onclick="cancelRequest({{ profile.user.id }})">Cancel Request</button>
+    {% elif friendship_status == "request_received" %}
+      <button class="btn primary" onclick="acceptRequest({{ received_request.id }})">Accept</button>
+      <button class="btn secondary" onclick="rejectRequest({{ received_request.id }})">Reject</button>
+    {% else %}
+      <button class="btn secondary" disabled>Friends</button>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+
+<!-- ================= PROFILE BODY ================= -->
+<div class="profile-body">
+
+<!-- LEFT -->
+<div class="profile-left">
+
+  <!-- INTRO -->
+  <div class="profile-card">
+    <h4>Intro</h4>
+    <p class="muted">{{ profile.bio|default:"No bio yet" }}</p>
+
+    <div class="info-row">🏢 {{ profile.work|default:"Not specified" }}</div>
+    <div class="info-row">🎓 {{ profile.education|default:"Not specified" }}</div>
+    <div class="info-row">📍 {{ profile.location|default:"Not specified" }}</div>
+    <div class="info-row">🗓 Joined {{ profile.user.date_joined|date:"M Y" }}</div>
+
+    {% if is_owner %}
+      <a href="{% url 'edit_profile' %}" class="btn secondary full">Edit Profile</a>
+    {% endif %}
+  </div>
+
+  <!-- FRIENDS PREVIEW -->
+  <div class="profile-card">
+    <div class="card-header">
+      <h4>Friends</h4>
+      <span>{{ friends_count }}</span>
+    </div>
+
+    <div class="friends-grid">
+      {% for friend in friends|slice:":6" %}
+        <a href="{% url 'profile' friend.friend.username %}">
+          <img
+            src="{{ friend.friend.profile.profile_pic.url|default:'/static/images/default-avatar.png' }}"
+            alt="friend"
+          >
+        </a>
+      {% empty %}
+        <p class="muted">No friends yet</p>
+      {% endfor %}
+    </div>
+
+    {% if friends_count > 6 %}
+      <a class="see-all">See all friends</a>
+    {% endif %}
+  </div>
+
+  <!-- PHOTOS PREVIEW -->
+  <div class="profile-card">
+    <h4>Photos</h4>
+
+    <div class="photos-grid">
+      {% for post in posts %}
+        {% if post.image %}
+          <img src="{{ post.image.url }}" alt="photo">
+        {% endif %}
+      {% endfor %}
+    </div>
+  </div>
+
+</div>
+
+
+  <!-- CENTER FEED -->
+  <div class="profile-center">
+
+    <!-- ================= CREATE POST ================= -->
+    {% if is_owner %}
+    <div class="post-box">
+      <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' %}">
+        {% csrf_token %}
+
+        <textarea
+          name="content"
+          placeholder="What's on your mind, {{ request.user.username }}?"
+          rows="3"
+          class="post-textarea"
+        ></textarea>
+
+        <input type="file" name="image" id="imageInput" accept="image/*" hidden>
+        <input type="file" name="video" id="videoInput" accept="video/*" hidden>
+
+        <div id="preview" class="media-preview"></div>
+
+        <div class="post-actions">
+          <button type="button" onclick="openImage()">📷 Photo</button>
+          <button type="button" onclick="openVideo()">🎥 Video</button>
+          <button type="submit" class="post-btn">Post</button>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+
+    <!-- ================= POSTS ================= -->
+    {% for post in posts %}
+    <div class="post-card">
+
+      <div class="post-header">
+        <strong>{{ post.user.username }}</strong>
+
+        {% if post.user == request.user %}
+        <div class="post-menu">
+          <button class="menu-btn" onclick="toggleMenu({{ post.id }})">⋯</button>
+          <div class="menu-dropdown" id="menu-{{ post.id }}">
+            <a href="{% url 'edit_post' post.id %}">Edit</a>
+            <a href="{% url 'delete_post' post.id %}" class="danger">Delete</a>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if post.content %}<p>{{ post.content }}</p>{% endif %}
+
+      {% if post.image %}
+        <img src="{{ post.image.url }}" class="post-media">
+      {% endif %}
+
+      {% if post.video %}
+        <video controls class="post-media">
+          <source src="{{ post.video.url }}">
+        </video>
+      {% endif %}
+
+      <div class="post-footer">
+        <button class="like-btn {% if post.liked %}liked{% endif %}"
+          onclick="toggleLike({{ post.id }}, this)">
+          👍 Like <span id="likes-{{ post.id }}">{{ post.likes.count }}</span>
+        </button>
+
+        <button class="comment-btn" onclick="toggleComments({{ post.id }})">
+          💬 Comment
+        </button>
+      </div>
+
+      <div class="comments-wrapper" id="comments-{{ post.id }}" style="display:none;">
+        {% for comment in post.root_comments %}
+          {% include "partials/comment.html" with comment=comment post=post level=0 %}
+        {% endfor %}
+
+        <form class="comment-form" onsubmit="submitComment(event, {{ post.id }})">
+          <input type="text" placeholder="Write a comment..." required>
+        </form>
+      </div>
+
+    </div>
+    {% empty %}
+      <p>No posts yet.</p>
+    {% endfor %}
+
+  </div>
+</div>
+
+<!-- ================= JS ================= -->
+<script>
+
+const imageInput = document.getElementById("imageInput");
+const videoInput = document.getElementById("videoInput");
+const preview = document.getElementById("preview");
+
+function getCSRF() {
+  return document.cookie.split('; ')
+    .find(r => r.startsWith('csrftoken='))
+    ?.split('=')[1];
+}
+
+/* Media */
+function openImage() {
+  videoInput.value = "";
+  imageInput.click();
+}
+function openVideo() {
+  imageInput.value = "";
+  videoInput.click();
+}
+
+imageInput?.addEventListener("change", e => {
+  if (!e.target.files[0]) return;
+  preview.innerHTML = `<img src="${URL.createObjectURL(e.target.files[0])}" class="preview-img">`;
+});
+
+videoInput?.addEventListener("change", e => {
+  if (!e.target.files[0]) return;
+  preview.innerHTML = `
+    <video controls class="preview-video">
+      <source src="${URL.createObjectURL(e.target.files[0])}">
+    </video>`;
+});
+
+/* UI */
+function toggleMenu(id) {
+  document.querySelectorAll('.menu-dropdown').forEach(m => {
+    if (m.id !== `menu-${id}`) m.style.display = "none";
+  });
+  const menu = document.getElementById(`menu-${id}`);
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+function toggleComments(id) {
+  const box = document.getElementById(`comments-${id}`);
+  box.style.display = box.style.display === "block" ? "none" : "block";
+}
+
+/* Likes */
+function toggleLike(id, btn) {
+  fetch(`/posts/${id}/like/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRF() }
+  })
+  .then(r => r.json())
+  .then(d => {
+    btn.classList.toggle("liked", d.liked);
+    document.getElementById(`likes-${id}`).innerText = d.likes_count;
+  });
+}
+
+/* Comments */
+function submitComment(e, postId) {
+  e.preventDefault();
+  const input = e.target.querySelector("input");
+
+  fetch(`/comment/add/${postId}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRF(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `content=${encodeURIComponent(input.value)}`
+  })
+  .then(r => r.text())
+  .then(html => {
+    e.target.insertAdjacentHTML("beforebegin", html);
+    input.value = "";
+  });
+}
+
+/* ================= FRIEND REQUESTS ================= */
+
+function sendRequest(userId) {
+  fetch(`/friends/send/${userId}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRF() }
+  })
+  .then(() => location.reload());
+}
+
+function cancelRequest(userId) {
+  fetch(`/friends/cancel/${userId}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRF() }
+  })
+  .then(() => location.reload());
+}
+
+function acceptRequest(requestId) {
+  fetch(`/friends/accept/${requestId}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRF() }
+  })
+  .then(() => location.reload());
+}
+
+function rejectRequest(requestId) {
+  fetch(`/friends/reject/${requestId}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRF() }
+  })
+  .then(() => location.reload());
+}
+
+/* ================= COMMENT LIKE ================= */
+function toggleCommentLike(commentId, btn) {
+  fetch(`/comment-like/${commentId}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRF() }
+  })
+  .then(res => res.json())
+  .then(data => {
+    btn.classList.toggle("liked", data.liked);
+    btn.querySelector("span").innerText = data.likes_count;
+  });
+}
+
+/* ================= REPLY FORM ================= */
+function toggleReplyForm(commentId) {
+  const form = document.getElementById(`reply-form-${commentId}`);
+  if (!form) return;
+  form.style.display = form.style.display === "block" ? "none" : "block";
+}
+
+/* ================= SUBMIT REPLY ================= */
+function submitReply(event, postId, parentId) {
+  event.preventDefault();
+  const input = event.target.querySelector("input");
+
+  fetch(`/comment/add/${postId}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRF(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `content=${encodeURIComponent(input.value)}&parent=${parentId}`
+  })
+  .then(res => res.text())
+  .then(html => {
+    event.target.insertAdjacentHTML("afterend", html);
+    event.target.style.display = "none";
+    input.value = "";
+  });
+}
+
+/* ================= EDIT COMMENT ================= */
+function showEditForm(id) {
+  document.getElementById(`edit-form-${id}`).style.display = "block";
+}
+
+function saveEdit(event, id) {
+  if (event.key !== "Enter") return;
+
+  fetch(`/comment/edit/${id}/`, {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": getCSRF(),
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: `content=${encodeURIComponent(event.target.value)}`
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById(`comment-text-${id}`).innerText = data.content;
+    document.getElementById(`edit-form-${id}`).style.display = "none";
+  });
+}
+
+/* ================= DELETE COMMENT ================= */
+function deleteComment(id) {
+  fetch(`/comment/delete/${id}/`, {
+    method: "POST",
+    headers: { "X-CSRFToken": getCSRF() }
+  })
+  .then(() => {
+    document.getElementById(`comment-${id}`).remove();
+  });
+}
+</script>
+
+{% endblock %}

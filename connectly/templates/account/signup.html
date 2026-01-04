@@ -1,0 +1,95 @@
+{% extends "auth_base.html" %}
+{% load static %}
+{% load socialaccount %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- LEFT BRAND -->
+    <div class="auth-left">
+      <h1 class="brand">Connectly</h1>
+
+      <p class="tagline">
+        Join Connectly today and start<br>
+        sharing your moments.
+      </p>
+
+      <ul class="features">
+        <li>🌍 Share updates & photos</li>
+        <li>💬 Stay connected with friends</li>
+        <li>✨ Discover new people</li>
+      </ul>
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="auth-right">
+      <h2>Create account ✨</h2>
+
+      <!-- ✅ FORM ERRORS -->
+      {% if form.errors %}
+        <div class="auth-errors">
+          {% for field, errors in form.errors.items %}
+            {% for error in errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      <form method="POST" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          required
+        >
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email address"
+          required
+        >
+
+        <input
+          type="password"
+          name="password1"
+          placeholder="Password"
+          required
+        >
+
+        <input
+          type="password"
+          name="password2"
+          placeholder="Confirm password"
+          required
+        >
+
+        <button type="submit" class="btn primary full">
+          Sign Up
+        </button>
+      </form>
+
+      <div class="divider">
+        <span>or</span>
+      </div>
+
+      <a href="{% provider_login_url 'google' %}" class="btn google full">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
+        Continue with Google
+      </a>
+
+      <p class="switch-auth">
+        Already have an account?
+        <a href="{% url 'account_login' %}">Log in</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

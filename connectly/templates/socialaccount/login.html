@@ -1,0 +1,50 @@
+{% extends "auth_base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- LEFT BRAND -->
+    <div class="auth-left">
+      <h1 class="brand">Connectly</h1>
+      <p class="tagline">
+        Connect with friends, share moments,<br>
+        and build your social world.
+      </p>
+
+      <ul class="features">
+        <li>🌍 Share updates & photos</li>
+        <li>💬 Stay connected with friends</li>
+        <li>✨ Discover new people</li>
+      </ul>
+    </div>
+
+    <!-- RIGHT CONFIRMATION -->
+    <div class="auth-right">
+      <h2>Sign in with Google</h2>
+
+      <p class="oauth-text">
+        You are about to sign in using your Google account.
+      </p>
+
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn google full">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg">
+          Continue with Google
+        </button>
+      </form>
+
+      <p class="switch-auth">
+        Changed your mind?
+        <a href="{% url 'account_login' %}">Back to login</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

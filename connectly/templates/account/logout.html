@@ -1,0 +1,49 @@
+{% extends "auth_base.html" %}
+{% load static %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- LEFT BRAND -->
+    <div class="auth-left">
+      <h1 class="brand">Connectly</h1>
+      <p class="tagline">
+        Stay connected with friends,<br>
+        anytime, anywhere.
+      </p>
+
+      <ul class="features">
+        <li>🔒 Secure authentication</li>
+        <li>💬 Conversations that matter</li>
+        <li>✨ Come back anytime</li>
+      </ul>
+    </div>
+
+    <!-- RIGHT LOGOUT -->
+    <div class="auth-right">
+      <h2>Sign out</h2>
+
+      <p class="logout-text">
+        Are you sure you want to sign out of your account?
+      </p>
+
+      <form method="post" action="{% url 'account_logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn danger full">
+          Sign Out
+        </button>
+      </form>
+
+      <p class="switch-auth">
+        Changed your mind?
+        <a href="/">Go back home</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

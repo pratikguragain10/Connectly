@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+
+<div class="post-card">
+
+  <h2>Edit Post</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+
+    <!-- CONTENT -->
+    <textarea
+      name="content"
+      rows="4"
+      class="post-textarea"
+    >{{ post.content }}</textarea>
+
+    <!-- EXISTING MEDIA PREVIEW -->
+    {% if post.image %}
+      <div class="media-preview">
+        <p><strong>Current Image</strong></p>
+        <img src="{{ post.image.url }}" class="post-media">
+      </div>
+    {% endif %}
+
+    {% if post.video %}
+      <div class="media-preview">
+        <p><strong>Current Video</strong></p>
+        <video controls class="post-media">
+          <source src="{{ post.video.url }}">
+        </video>
+      </div>
+    {% endif %}
+
+    <!-- HIDDEN INPUTS -->
+    <input type="file" name="image" id="editImageInput" accept="image/*" hidden>
+    <input type="file" name="video" id="editVideoInput" accept="video/*" hidden>
+
+    <!-- NEW PREVIEW -->
+    <div id="editPreview" class="media-preview"></div>
+
+    <!-- ACTIONS -->
+    <div class="post-actions">
+      <button type="button" onclick="openEditImage()">📷 Replace Image</button>
+      <button type="button" onclick="openEditVideo()">🎥 Replace Video</button>
+
+      <button type="submit" class="post-btn">Save</button>
+      <a href="{% url 'home' %}" class="btn secondary">Cancel</a>
+    </div>
+
+  </form>
+</div>
+
+<!-- JS -->
+<script>
+function openEditImage() {
+  document.getElementById("editImageInput").click();
+}
+
+function openEditVideo() {
+  document.getElementById("editVideoInput").click();
+}
+
+document.getElementById("editImageInput").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  document.getElementById("editPreview").innerHTML =
+    `<img src="${URL.createObjectURL(file)}" class="preview-img">`;
+});
+
+document.getElementById("editVideoInput").addEventListener("change", function(e) {
+  const file = e.target.files[0];
+  document.getElementById("editPreview").innerHTML =
+    `<video controls class="preview-video">
+        <source src="${URL.createObjectURL(file)}">
+     </video>`;
+});
+</script>
+
+{% endblock %}

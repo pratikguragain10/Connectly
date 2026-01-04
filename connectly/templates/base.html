@@ -1,0 +1,96 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Connectly</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+<header class="topbar">
+
+  <!-- LEFT -->
+  <div class="topbar-left">
+    <a href="{% url 'home' %}" class="logo">Connectly</a>
+      <form action="{% url 'user_search' %}" method="GET">
+    <input
+      type="text"
+      name="q"
+      placeholder="Search users"
+    >
+  </form>
+  </div>
+
+  <!-- CENTER (IMPORTANT WRAPPER) -->
+  <div class="topbar-center-wrapper">
+    <div class="topbar-center">
+      <a href="{% url 'home' %}" class="active">🏠</a>
+      <a href="#">👥</a>
+      <a href="#">🔔</a>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="topbar-right">
+    {% if request.user.is_authenticated %}
+      <div class="nav-user" onclick="toggleUserMenu(event)">
+        <img
+          src="{{ request.user.profile.profile_pic.url }}"
+          class="nav-avatar"
+          alt="Profile"
+        >
+
+        <div class="nav-dropdown" id="userMenu">
+          <a href="{% url 'profile' request.user.username %}">👤 Profile</a>
+          <a href="{% url 'account_logout' %}" class="danger">🚪 Logout</a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+</header>
+
+
+<!-- ================= PAGE CONTENT ================= -->
+
+<div class="{% if is_profile_page %}profile-page{% else %}layout{% endif %}">
+
+  {% if not is_profile_page and request.user.is_authenticated %}
+    <aside class="sidebar left">
+      <a href="{% url 'profile' request.user.username %}">👤 Profile</a>
+      <a href="{% url 'home' %}">📰 Feed</a>
+      <a href="{% url 'user_search' %}">🔍 Find Friends</a>
+    </aside>
+  {% endif %}
+
+  <main class="{% if is_profile_page %}profile-main{% else %}content{% endif %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% if not is_profile_page and request.user.is_authenticated %}
+    <aside class="sidebar right">
+      <h4>Contacts</h4>
+      <p>No contacts yet</p>
+    </aside>
+  {% endif %}
+
+</div>
+
+<!-- ================= NAVBAR JS ================= -->
+<script>
+function toggleUserMenu(e) {
+  e.stopPropagation();
+  const menu = document.getElementById("userMenu");
+  menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", () => {
+  const menu = document.getElementById("userMenu");
+  if (menu) menu.style.display = "none";
+});
+</script>
+
+</body>
+</html>

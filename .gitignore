@@ -1,0 +1,51 @@
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pkl
+
+# Virtual Environment
+venv/
+env/
+.venv/
+
+# Environment variables
+.env
+
+# Django
+*.log
+db.sqlite3
+media/
+staticfiles/
+
+# Django migrations (optional: keep if you want)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Static files
+/static/
+
+# Node / frontend (if ever used)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDEs / Editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Tests & coverage
+htmlcov/
+.coverage
+.pytest_cache/
+
+# Build & deployment
+build/
+dist/
