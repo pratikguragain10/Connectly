@@ -17,7 +17,10 @@ load_dotenv(BASE_DIR / ".env")
 # --------------------------------------------------
 # SECURITY
 # --------------------------------------------------
-SECRET_KEY = "django-insecure-po!g5mf#n6%07e32%go+uocapjgl84n5$55^toizwzuum#1&8u"
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "django-insecure-dev-key"
+)
 
 DEBUG = os.getenv("DEBUG", "False") == "True"
 
@@ -37,7 +40,6 @@ ALLOWED_HOSTS = [
 # APPLICATIONS
 # --------------------------------------------------
 INSTALLED_APPS = [
-    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,23 +48,19 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.contrib.sites",
 
-    # Allauth
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.google",
 
-    # APIs / realtime
     "rest_framework",
     "channels",
 
-    # Local apps
     "accounts",
     "posts",
     "friends",
     "notifications",
 
-    # Media
     "cloudinary",
     "cloudinary_storage",
 ]
@@ -99,13 +97,26 @@ LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 # --------------------------------------------------
-# ALLAUTH SETTINGS (FIXED)
+# ALLAUTH (MODERN + SAFE)
 # --------------------------------------------------
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
+
+ACCOUNT_SIGNUP_FIELDS = {
+    "username": {"required": True},
+    "email": {"required": True},
+    "password1": {"required": True},
+    "password2": {"required": True},
+}
+
 ACCOUNT_EMAIL_VERIFICATION = "none"
 ACCOUNT_LOGOUT_ON_GET = False
+
+SOCIALACCOUNT_PROVIDERS = {
+    "google": {
+        "SCOPE": ["profile", "email"],
+        "AUTH_PARAMS": {"access_type": "online"},
+    }
+}
 
 # --------------------------------------------------
 # URLS / TEMPLATES
@@ -135,13 +146,13 @@ WSGI_APPLICATION = "connectly.wsgi.application"
 ASGI_APPLICATION = "connectly.asgi.application"
 
 # --------------------------------------------------
-# CHANNELS (Redis)
+# CHANNELS
 # --------------------------------------------------
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [os.getenv("REDIS_URL", "redis://127.0.0.1:6379")],
         },
     }
 }
@@ -153,7 +164,7 @@ DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
         conn_max_age=600,
-        ssl_require=True
+        ssl_require=not DEBUG,
     )
 }
 
