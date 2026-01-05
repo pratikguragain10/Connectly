@@ -1004,12 +1004,22 @@ body {
 
 /* ---------- SMALL LAPTOP & BELOW ---------- */
 @media (max-width: 992px) {
+
+  /* MAIN LAYOUT */
   .layout {
     grid-template-columns: 1fr minmax(0, 680px);
+    gap: 12px;
   }
 
   .sidebar.right {
     display: none;
+  }
+
+  /* AUTH */
+  .auth-card {
+    max-width: 900px;
+    padding: 32px;
+    gap: 40px;
   }
 }
 
@@ -1022,15 +1032,15 @@ body {
   }
 
   .topbar-center {
-    gap: 16px;
+    gap: 14px;
   }
 
   .topbar-center a {
-    font-size: 20px;
+    font-size: 18px;
     padding: 6px 10px;
   }
 
-  /* LAYOUT */
+  /* MAIN LAYOUT */
   .layout {
     grid-template-columns: 1fr;
     margin: 12px auto;
@@ -1042,7 +1052,7 @@ body {
 
   .feed-container {
     max-width: 100%;
-    padding: 0 10px;
+    padding: 0 12px;
   }
 
   /* PROFILE */
@@ -1059,12 +1069,30 @@ body {
   .profile-actions {
     margin-left: 0;
     margin-top: 10px;
+    justify-content: center;
+  }
+
+  /* AUTH */
+  .auth-card {
+    flex-direction: column;
+    gap: 32px;
+    padding: 28px;
+  }
+
+  .auth-left {
+    text-align: center;
+  }
+
+  .auth-left .tagline {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
 /* ---------- MOBILE ---------- */
 @media (max-width: 576px) {
 
+  /* BODY */
   body {
     padding-top: 56px;
   }
@@ -1101,17 +1129,51 @@ body {
     height: 120px;
   }
 
-  /* AUTH */
-  .auth-card {
-    grid-template-columns: 1fr;
-    width: 95%;
+  /* AUTH WRAPPER */
+  .auth-wrapper {
+    align-items: flex-start;
+    padding: 24px 16px;
   }
 
+  /* AUTH CARD */
+  .auth-card {
+    width: 100%;
+    max-width: 380px;
+    padding: 20px;
+    gap: 24px;
+    border-radius: 18px;
+  }
+
+  /* HIDE BRAND SECTION */
   .auth-left {
     display: none;
   }
 
+  /* AUTH FORM */
   .auth-right {
-    padding: 32px 20px;
+    width: 100%;
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .auth-right h2 {
+    font-size: 1.4rem;
+  }
+
+  .auth-right input {
+    padding: 12px 14px;
+    font-size: 0.95rem;
+  }
+
+  .btn.primary,
+  .btn.google,
+  .btn.danger {
+    width: 100%;
+    font-size: 1rem;
+    padding: 12px;
+  }
+
+  .divider {
+    margin: 16px 0;
   }
 }
