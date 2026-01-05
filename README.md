@@ -158,9 +158,3 @@ python manage.py runserver
 - Mobile-first improvements
 
 ---
-
-## 👨‍💻 Author
-
-**Pratik Guragain**  
-📍 India  
-💻 Django Developer
