@@ -26,11 +26,15 @@ def home(request):
 
     for post in posts:
         post.liked = post.likes.filter(user=request.user).exists()
-        post.root_comments = post.comments.filter(parent__isnull=True)
-
-        for comment in post.comments.all():
+        post.root_comments = (
+            post.comments
+            .filter(parent__isnull=True)
+            .order_by("created_at")
+        )
+        for comment in post.comments.all().order_by("created_at"):
             comment.liked = comment.likes.filter(user=request.user).exists()
-            for reply in comment.replies.all():
+            comment.ordered_replies = comment.replies.all().order_by("created_at")
+            for reply in comment.ordered_replies:
                 reply.liked = reply.likes.filter(user=request.user).exists()
 
     return render(request, "home.html", {"posts": posts})
