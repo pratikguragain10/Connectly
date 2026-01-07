@@ -158,12 +158,48 @@ body {
 
 .post-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
 }
 
-.post-header strong {
-  font-size: 15px;
+/* Left side: avatar + name */
+.post-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Avatar */
+.post-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+/* Name + time */
+.post-user-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.post-user-info strong {
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.post-user-info strong:hover {
+  text-decoration: underline;
+}
+
+/* Time + visibility */
+.post-meta {
+  font-size: 12px;
+  color: #65676b;
 }
 
 /* ================= MEDIA ================= */

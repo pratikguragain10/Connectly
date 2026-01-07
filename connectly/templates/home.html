@@ -32,7 +32,7 @@
       <button type="button" class="media-action video" onclick="openVideo()">
         <span class="icon">🎥</span> Video
       </button>
-      
+
       <button type="submit" class="post-btn">Post</button>
     </div>
   </form>
@@ -43,29 +43,48 @@
 <div class="post-card">
 
   <!-- HEADER -->
-  <div class="post-header">
-    <strong>{{ post.user.username }}</strong>
+  <!-- HEADER -->
+<div class="post-header">
 
-    {% if post.user == request.user %}
-    <div class="post-menu">
-      <button
-        class="menu-btn"
-        onclick="event.stopPropagation(); toggleMenu({{ post.id }})"
-      >
-        ⋯
-      </button>
+  <!-- LEFT: avatar + name + time -->
+  <div class="post-user">
+    <img
+      src="{{ post.user.profile.profile_picture.url }}"
+      alt="avatar"
+      class="post-avatar"
+    >
 
-      <div
-        class="menu-dropdown"
-        id="menu-{{ post.id }}"
-        onclick="event.stopPropagation()"
-      >
-        <a href="{% url 'edit_post' post.id %}">Edit</a>
-        <a href="{% url 'delete_post' post.id %}" class="danger">Delete</a>
-      </div>
+    <div class="post-user-info">
+      <strong>{{ post.user.username }}</strong>
+      <span class="post-meta">
+        {{ post.created_at|date:"d M Y" }} · 🌍
+      </span>
     </div>
-    {% endif %}
   </div>
+
+  <!-- RIGHT: menu -->
+  {% if post.user == request.user %}
+  <div class="post-menu">
+    <button
+      class="menu-btn"
+      onclick="event.stopPropagation(); toggleMenu({{ post.id }})"
+    >
+      ⋯
+    </button>
+
+    <div
+      class="menu-dropdown"
+      id="menu-{{ post.id }}"
+      onclick="event.stopPropagation()"
+    >
+      <a href="{% url 'edit_post' post.id %}">Edit</a>
+      <a href="{% url 'delete_post' post.id %}" class="danger">Delete</a>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+
 
   {% if post.content %}
     <p>{{ post.content }}</p>
