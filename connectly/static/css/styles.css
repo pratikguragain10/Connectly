@@ -103,35 +103,115 @@ body {
   align-items: flex-start;
 }
 
-/* ================= SIDEBARS ================= */
+/* ================= SIDEBARS (FACEBOOK STYLE) ================= */
+
 .sidebar {
-  background: white;
+  background: #ffffff;
   border-radius: 12px;
-  padding: 12px;
-  height: fit-content;
+  padding: 8px;
   position: sticky;
   top: 76px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
-.sidebar a {
-  display: block;
-  padding: 8px 10px;
-  border-radius: 6px;
-  color: #050505;
-  text-decoration: none;
-  font-weight: 500;
-  font-size: 14px;
+/* LEFT SIDEBAR */
+.facebook-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.sidebar a:hover {
+/* Sidebar item */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  color: #050505;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.sidebar-item:hover {
   background: #f0f2f5;
 }
+
+/* Icons */
+.sidebar-item .icon {
+  font-size: 20px;
+  width: 24px;
+  text-align: center;
+}
+
+/* USER ROW */
+.user-item {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.sidebar-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Divider */
+.sidebar-divider {
+  border: none;
+  height: 1px;
+  background: #e4e6eb;
+  margin: 8px 0;
+}
+
+/* ================= SEE MORE EXPAND ================= */
+
+.sidebar-expand {
+  max-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  transition: max-height 0.35s ease;
+}
+
+.sidebar-expand.open {
+  max-height: 500px;
+}
+
+/* SEE MORE BUTTON */
+.see-more {
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+/* Rotate arrow */
+.rotate {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.rotate.open {
+  transform: rotate(180deg);
+}
+
+/* ================= RIGHT SIDEBAR ================= */
 
 .sidebar.right {
   max-height: calc(100vh - 100px);
   overflow-y: auto;
 }
+
 
 /* ================= FEED CONTAINER ================= */
 .feed-container {
