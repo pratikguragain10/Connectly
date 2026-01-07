@@ -7,12 +7,22 @@
   <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' %}">
     {% csrf_token %}
 
-    <textarea
-      name="content"
-      placeholder="What's on your mind, {{ request.user.username }}?"
-      class="post-textarea"
-    ></textarea>
+    <!-- HEADER: Avatar + input -->
+    <div class="create-post-header">
+      <img
+        src="{{ request.user.profile.profile_picture.url }}"
+        alt="avatar"
+        class="create-post-avatar"
+      >
 
+      <textarea
+        name="content"
+        class="post-textarea"
+        placeholder="What's on your mind, {{ request.user.username }}?"
+      ></textarea>
+    </div>
+
+    <!-- FILE INPUTS -->
     <input type="file" name="image" id="imageInput" accept="image/*" hidden>
     <input type="file" name="video" id="videoInput" accept="video/*" hidden>
 
@@ -23,6 +33,7 @@
       <video id="previewVideo" controls style="display:none;"></video>
     </div>
 
+    <!-- ACTIONS -->
     <div class="post-actions">
       <button type="button" class="media-action photo" onclick="openImage()">
         <span class="icon">📷</span> Photo
@@ -34,8 +45,10 @@
 
       <button type="submit" class="post-btn">Post</button>
     </div>
+
   </form>
 </div>
+
 
 <!-- ================= POSTS ================= -->
 {% for post in posts %}
