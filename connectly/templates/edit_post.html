@@ -42,8 +42,10 @@
 
     <!-- ACTIONS -->
     <div class="post-actions">
-      <button type="button" onclick="openEditImage()">📷 Replace Image</button>
-      <button type="button" onclick="openEditVideo()">🎥 Replace Video</button>
+      <button type="button" class="media-action photo" onclick="openEditImage()">
+        <span class="icon">📷</span> Replace Image</button>
+      <button type="button" class="media-action video" onclick="openEditVideo()">
+        <span class="icon">🎥</span> Replace Video</button>
 
       <button type="submit" class="post-btn">Save</button>
       <a href="{% url 'home' %}" class="btn secondary">Cancel</a>
