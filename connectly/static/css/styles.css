@@ -376,7 +376,7 @@ body {
 }
 
 .profile-actions {
-  margin-left: auto;
+  margin-top: 12px;
   display: flex;
   gap: 10px;
 }
@@ -462,20 +462,47 @@ body {
   margin-top: 12px;
 }
 
-/* Media buttons */
-.media-btn {
-  background: #f0f2f5;
-  border: none;
+/* ================= POST ACTION BUTTONS ================= */
+
+.media-action {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
   padding: 8px 14px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 999px;
+  border: none;
+
+  background: #f0f2f5;
   color: #050505;
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition: background 0.15s ease, transform 0.1s ease;
 }
 
-.media-btn:hover {
+.media-action:hover {
   background: #e4e6eb;
+}
+
+.media-action:active {
+  transform: scale(0.97);
+}
+
+/* Icon */
+.media-action .icon {
+  font-size: 18px;
+}
+
+/* Accent colors */
+.media-action.photo .icon {
+  color: #45bd62;
+}
+
+.media-action.video .icon {
+  color: #f02849;
 }
 
 /* Post button */

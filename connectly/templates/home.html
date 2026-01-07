@@ -25,8 +25,14 @@
     </div>
 
     <div class="post-actions">
-      <button type="button" onclick="openImage()">📷 Photo</button>
-      <button type="button" onclick="openVideo()">🎥 Video</button>
+      <button type="button" class="media-action photo" onclick="openImage()">
+        <span class="icon">📷</span> Photo
+      </button>
+
+      <button type="button" class="media-action video" onclick="openVideo()">
+        <span class="icon">🎥</span> Video
+      </button>
+      
       <button type="submit" class="post-btn">Post</button>
     </div>
   </form>
