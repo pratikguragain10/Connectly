@@ -6,7 +6,7 @@ from django.shortcuts import render, get_object_or_404
 from .models import FriendRequest, Friend
 
 
-# ================= SEND FRIEND REQUEST =================
+# SEND FRIEND REQUEST
 @login_required
 @require_POST
 def send_request(request, user_id):
@@ -21,7 +21,7 @@ def send_request(request, user_id):
     return JsonResponse({"status": "request_sent"})
 
 
-# ================= CANCEL FRIEND REQUEST =================
+# CANCEL FRIEND REQUEST
 @login_required
 @require_POST
 def cancel_request(request, user_id):
@@ -35,7 +35,7 @@ def cancel_request(request, user_id):
     return JsonResponse({"status": "cancelled"})
 
 
-# ================= ACCEPT FRIEND REQUEST =================
+# ACCEPT FRIEND REQUEST
 @login_required
 @require_POST
 def accept_request(request, request_id):
@@ -50,7 +50,7 @@ def accept_request(request, request_id):
     return JsonResponse({"status": "friends"})
 
 
-# ================= REJECT FRIEND REQUEST =================
+# REJECT FRIEND REQUEST
 @login_required
 @require_POST
 def reject_request(request, request_id):
@@ -58,7 +58,7 @@ def reject_request(request, request_id):
     return JsonResponse({"status": "rejected"})
 
 
-# ================= REMOVE FRIEND =================
+# REMOVE FRIEND 
 @login_required
 @require_POST
 def remove_friend(request, user_id):
@@ -70,7 +70,7 @@ def remove_friend(request, user_id):
     return JsonResponse({"status": "removed"})
 
 
-# ================= SEARCH USERS =================
+# SEARCH USERS 
 @login_required
 def user_search(request):
     query = request.GET.get("q", "")

@@ -2,20 +2,39 @@
 {% load static %}
 {% block content %}
 
+<!-- ================= STORIES SECTION ================= -->
+<div class="stories-section">
+  <div class="stories-container">
+    <!-- Create Story -->
+    <div class="story-card story-create">
+      <div class="story-create-icon">+</div>
+      <span>Create story</span>
+    </div>
+
+    <!-- Example Stories (you can make these dynamic later) -->
+    <div class="story-card">
+      <img src="{{ request.user.profile.profile_pic.url }}" class="story-avatar" alt="Story">
+      <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400" alt="Story">
+      <div class="story-overlay">Your Story</div>
+    </div>
+  </div>
+</div>
+
 <!-- ================= CREATE POST ================= -->
 <div class="post-box">
   <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' %}">
     {% csrf_token %}
 
-    <textarea
-      name="content"
-      placeholder="What's on your mind, {{ request.user.username }}?"
-      rows="3"
-      class="post-textarea"
-    ></textarea>
-
-    <input type="file" name="image" id="imageInput" accept="image/*" hidden>
-    <input type="file" name="video" id="videoInput" accept="video/*" hidden>
+    <div class="post-box-top">
+      <img src="{{ request.user.profile.profile_pic.url }}" class="post-box-avatar" alt="{{ request.user.username }}">
+      <textarea
+        name="content"
+        placeholder="What's on your mind, {{ request.user.username }}?"
+        rows="1"
+        class="post-textarea"
+        oninput="autoResize(this)"
+      ></textarea>
+    </div>
 
     <!-- MEDIA PREVIEW -->
     <div class="media-preview" id="mediaPreview" style="display:none;">
@@ -24,11 +43,23 @@
       <video id="previewVideo" controls style="display:none;"></video>
     </div>
 
-    <div class="post-actions">
-      <button type="button" onclick="openImage()">📷 Photo</button>
-      <button type="button" onclick="openVideo()">🎥 Video</button>
+    <div class="post-box-bottom">
+      <div class="post-box-actions">
+        <button type="button" onclick="openImage()" class="post-box-action-btn">
+          <span style="color:#45bd62;">📷</span> Photo
+        </button>
+        <button type="button" onclick="openVideo()" class="post-box-action-btn">
+          <span style="color:#f02849;">🎬</span> Video
+        </button>
+        <button type="button" class="post-box-action-btn">
+          <span style="color:#f7b928;">😊</span> Feeling/activity
+        </button>
+      </div>
       <button type="submit" class="post-btn">Post</button>
     </div>
+
+    <input type="file" name="image" id="imageInput" accept="image/*" hidden>
+    <input type="file" name="video" id="videoInput" accept="video/*" hidden>
   </form>
 </div>
 
@@ -38,31 +69,27 @@
 
   <!-- HEADER -->
   <div class="post-header">
-    <strong>{{ post.user.username }}</strong>
+    <div class="post-user-info">
+      <img src="{{ post.user.profile.profile_pic.url }}" class="post-avatar" alt="{{ post.user.username }}">
+      <div>
+        <strong>{{ post.user.username }}</strong>
+        <div class="post-time">Just now · 🌍</div>
+      </div>
+    </div>
 
     {% if post.user == request.user %}
     <div class="post-menu">
-      <button
-        class="menu-btn"
-        onclick="event.stopPropagation(); toggleMenu({{ post.id }})"
-      >
-        ⋯
-      </button>
-
-      <div
-        class="menu-dropdown"
-        id="menu-{{ post.id }}"
-        onclick="event.stopPropagation()"
-      >
-        <a href="{% url 'edit_post' post.id %}">Edit</a>
-        <a href="{% url 'delete_post' post.id %}" class="danger">Delete</a>
+      <button class="menu-btn" onclick="event.stopPropagation(); toggleMenu({{ post.id }})">⋯</button>
+      <div class="menu-dropdown" id="menu-{{ post.id }}" onclick="event.stopPropagation()">
+        <a href="{% url 'edit_post' post.id %}">✏️ Edit post</a>
+        <a href="{% url 'delete_post' post.id %}" class="danger">🗑️ Delete</a>
       </div>
     </div>
     {% endif %}
   </div>
 
   {% if post.content %}
-    <p>{{ post.content }}</p>
+    <p class="post-content">{{ post.content }}</p>
   {% endif %}
 
   {% if post.image %}
@@ -75,23 +102,30 @@
     </video>
   {% endif %}
 
-  <!-- FOOTER -->
-  <div class="post-footer">
-    <button
-      type="button"
-      class="like-btn {% if post.liked %}liked{% endif %}"
-      onclick="toggleLike({{ post.id }}, this)"
-    >
-      👍 Like <span id="likes-{{ post.id }}">{{ post.likes.count }}</span>
-    </button>
+  <!-- STATS -->
+  <div class="post-stats">
+    <div class="post-stats-left">
+      <span class="like-icon">👍</span>
+      <span id="likes-count-{{ post.id }}">{{ post.likes.count }}</span>
+    </div>
+    <div>
+      <span id="comments-count-{{ post.id }}">{{ post.comments.count }} comments</span>
+    </div>
+  </div>
 
-    <button
-      type="button"
-      class="comment-btn"
-      onclick="toggleComments({{ post.id }})"
-    >
-      💬 Comment
-    </button>
+  <!-- ACTIONS -->
+  <div class="post-footer">
+    <div class="post-actions-bar">
+      <button class="action-btn like-btn {% if post.liked %}liked{% endif %}" onclick="toggleLike({{ post.id }}, this)">
+        👍 Like
+      </button>
+      <button class="action-btn comment-btn" onclick="toggleComments({{ post.id }})">
+        💬 Comment
+      </button>
+      <button class="action-btn">
+        ↗️ Share
+      </button>
+    </div>
   </div>
 
   <!-- ================= COMMENTS ================= -->
@@ -103,17 +137,26 @@
     </div>
 
     <form onsubmit="submitComment(event, {{ post.id }})" class="comment-form">
+      <img src="{{ request.user.profile.profile_pic.url }}" class="comment-form-avatar" alt="{{ request.user.username }}">
       <input type="text" placeholder="Write a comment..." required>
     </form>
   </div>
 
 </div>
 {% empty %}
-<p>No posts yet.</p>
+<div class="post-card">
+  <p style="text-align: center; padding: 20px; color: #65676b;">No posts yet. Start sharing!</p>
+</div>
 {% endfor %}
 
 <!-- ================= JS ================= -->
 <script>
+/* ---------- AUTO RESIZE TEXTAREA ---------- */
+function autoResize(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
 /* ---------- CSRF ---------- */
 function getCSRFToken() {
   return document.cookie
@@ -165,7 +208,7 @@ function clearMedia() {
   videoInput.value = "";
 }
 
-/* ---------- MENU FIX (IMPORTANT) ---------- */
+/* ---------- MENU FIX ---------- */
 let openMenuId = null;
 
 function toggleMenu(postId) {
@@ -207,7 +250,7 @@ function toggleLike(postId, btn) {
   .then(res => res.json())
   .then(data => {
     btn.classList.toggle("liked", data.liked);
-    document.getElementById(`likes-${postId}`).innerText = data.likes_count;
+    document.getElementById(`likes-count-${postId}`).innerText = data.likes_count;
   });
 }
 
@@ -305,4 +348,3 @@ function toggleReplyForm(id) {
 </script>
 
 {% endblock %}
-

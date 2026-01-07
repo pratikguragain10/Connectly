@@ -8,7 +8,7 @@ from friends.utils import get_friendship_status
 from friends.models import FriendRequest, Friend
 
 
-# ================= PROFILE VIEW =================
+# PROFILE VIEW
 @login_required
 def profile_view(request, username):
     user = get_object_or_404(User, username=username)
@@ -72,7 +72,7 @@ def profile_view(request, username):
         }
     )
 
-# ================= EDIT PROFILE =================
+# EDIT PROFILE
 @login_required
 def edit_profile(request):
     profile = request.user.profile

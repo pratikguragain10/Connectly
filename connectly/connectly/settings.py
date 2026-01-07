@@ -8,15 +8,15 @@ from dotenv import load_dotenv
 import cloudinary
 import dj_database_url
 
-# --------------------------------------------------
+
 # BASE DIR
-# --------------------------------------------------
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / ".env")
 
-# --------------------------------------------------
+
 # SECURITY
-# --------------------------------------------------
+
 SECRET_KEY = os.getenv(
     "SECRET_KEY",
     "django-insecure-dev-key"
@@ -36,9 +36,9 @@ ALLOWED_HOSTS = [
     ".onrender.com",
 ]
 
-# --------------------------------------------------
+
 # APPLICATIONS
-# --------------------------------------------------
+
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -67,9 +67,9 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 
-# --------------------------------------------------
+
 # MIDDLEWARE
-# --------------------------------------------------
+
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -84,9 +84,9 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-# --------------------------------------------------
+
 # AUTHENTICATION
-# --------------------------------------------------
+
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
@@ -96,9 +96,9 @@ LOGIN_URL = "/accounts/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/accounts/login/"
 
-# --------------------------------------------------
+
 # ALLAUTH (MODERN + SAFE)
-# --------------------------------------------------
+
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 
 ACCOUNT_SIGNUP_FIELDS = {
@@ -118,9 +118,9 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-# --------------------------------------------------
+
 # URLS / TEMPLATES
-# --------------------------------------------------
+
 ROOT_URLCONF = "connectly.urls"
 
 TEMPLATES = [
@@ -139,15 +139,15 @@ TEMPLATES = [
     },
 ]
 
-# --------------------------------------------------
+
 # ASGI / WSGI
-# --------------------------------------------------
+
 WSGI_APPLICATION = "connectly.wsgi.application"
 ASGI_APPLICATION = "connectly.asgi.application"
 
-# --------------------------------------------------
+
 # CHANNELS
-# --------------------------------------------------
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
@@ -157,9 +157,9 @@ CHANNEL_LAYERS = {
     }
 }
 
-# --------------------------------------------------
+
 # DATABASE
-# --------------------------------------------------
+
 DATABASES = {
     "default": dj_database_url.config(
         default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
@@ -168,9 +168,9 @@ DATABASES = {
     )
 }
 
-# --------------------------------------------------
+
 # PASSWORD VALIDATION
-# --------------------------------------------------
+
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -178,17 +178,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# --------------------------------------------------
+
 # INTERNATIONALIZATION
-# --------------------------------------------------
+
 LANGUAGE_CODE = "en-us"
 TIME_ZONE = "UTC"
 USE_I18N = True
 USE_TZ = True
 
-# --------------------------------------------------
+
 # STATIC FILES
-# --------------------------------------------------
+
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
@@ -196,14 +196,14 @@ STATICFILES_DIRS = [
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# --------------------------------------------------
+
 # DEFAULT PK
-# --------------------------------------------------
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# --------------------------------------------------
+
 # CLOUDINARY
-# --------------------------------------------------
+
 cloudinary.config(
     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
     api_key=os.getenv("CLOUDINARY_API_KEY"),
