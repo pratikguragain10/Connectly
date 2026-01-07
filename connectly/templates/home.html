@@ -7,15 +7,15 @@
   <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' %}">
     {% csrf_token %}
 
-    <div class="post-box-top">
-      <img src="{{ request.user.profile.profile_pic.url }}" class="post-box-avatar" alt="{{ request.user.username }}">
-      <textarea
-        name="content"
-        placeholder="What's on your mind, {{ request.user.username }}?"
-        rows="3"
-        class="post-textarea"
-      ></textarea>
-    </div>
+    <textarea
+      name="content"
+      placeholder="What's on your mind, {{ request.user.username }}?"
+      rows="3"
+      class="post-textarea"
+    ></textarea>
+
+    <input type="file" name="image" id="imageInput" accept="image/*" hidden>
+    <input type="file" name="video" id="videoInput" accept="video/*" hidden>
 
     <!-- MEDIA PREVIEW -->
     <div class="media-preview" id="mediaPreview" style="display:none;">
@@ -24,16 +24,11 @@
       <video id="previewVideo" controls style="display:none;"></video>
     </div>
 
-    <div class="post-box-bottom">
-      <button type="button" onclick="openImage()" class="post-box-action-btn">
-        <span style="color:#45bd62;">📷</span> Photo/Video
-      </button>
-      <!-- Add more if you want: 😄 Feeling/Activity, 🏷️ Tag People -->
+    <div class="post-actions">
+      <button type="button" onclick="openImage()">📷 Photo</button>
+      <button type="button" onclick="openVideo()">🎥 Video</button>
       <button type="submit" class="post-btn">Post</button>
     </div>
-
-    <input type="file" name="image" id="imageInput" accept="image/*" hidden>
-    <input type="file" name="video" id="videoInput" accept="video/*" hidden>
   </form>
 </div>
 
@@ -43,18 +38,22 @@
 
   <!-- HEADER -->
   <div class="post-header">
-    <div class="post-user-info">
-      <img src="{{ post.user.profile.profile_pic.url }}" class="post-avatar" alt="{{ post.user.username }}">
-      <div>
-        <strong>{{ post.user.username }}</strong>
-        <div class="post-time">Just now</div> <!-- Replace with real time if you have post.timestamp -->
-      </div>
-    </div>
+    <strong>{{ post.user.username }}</strong>
 
     {% if post.user == request.user %}
     <div class="post-menu">
-      <button class="menu-btn" onclick="event.stopPropagation(); toggleMenu({{ post.id }})">⋯</button>
-      <div class="menu-dropdown" id="menu-{{ post.id }}" onclick="event.stopPropagation()">
+      <button
+        class="menu-btn"
+        onclick="event.stopPropagation(); toggleMenu({{ post.id }})"
+      >
+        ⋯
+      </button>
+
+      <div
+        class="menu-dropdown"
+        id="menu-{{ post.id }}"
+        onclick="event.stopPropagation()"
+      >
         <a href="{% url 'edit_post' post.id %}">Edit</a>
         <a href="{% url 'delete_post' post.id %}" class="danger">Delete</a>
       </div>
@@ -63,7 +62,7 @@
   </div>
 
   {% if post.content %}
-    <p class="post-content">{{ post.content }}</p>
+    <p>{{ post.content }}</p>
   {% endif %}
 
   {% if post.image %}
@@ -78,15 +77,21 @@
 
   <!-- FOOTER -->
   <div class="post-footer">
-    <div class="post-actions-bar">
-      <button class="action-btn like-btn {% if post.liked %}liked{% endif %}" onclick="toggleLike({{ post.id }}, this)">
-        👍 Like <span id="likes-{{ post.id }}">{{ post.likes.count }}</span>
-      </button>
-      <button class="action-btn comment-btn" onclick="toggleComments({{ post.id }})">
-        💬 Comment
-      </button>
-      <!-- Optional Share: <button class="action-btn">↗️ Share</button> -->
-    </div>
+    <button
+      type="button"
+      class="like-btn {% if post.liked %}liked{% endif %}"
+      onclick="toggleLike({{ post.id }}, this)"
+    >
+      👍 Like <span id="likes-{{ post.id }}">{{ post.likes.count }}</span>
+    </button>
+
+    <button
+      type="button"
+      class="comment-btn"
+      onclick="toggleComments({{ post.id }})"
+    >
+      💬 Comment
+    </button>
   </div>
 
   <!-- ================= COMMENTS ================= -->
