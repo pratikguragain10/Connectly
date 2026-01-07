@@ -129,28 +129,51 @@
     <!-- ================= CREATE POST ================= -->
     {% if is_owner %}
     <div class="post-box">
-      <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' %}">
-        {% csrf_token %}
+  <form method="POST" enctype="multipart/form-data" action="{% url 'create_post' %}">
+    {% csrf_token %}
 
-        <textarea
-          name="content"
-          placeholder="What's on your mind, {{ request.user.username }}?"
-          rows="3"
-          class="post-textarea"
-        ></textarea>
+    <!-- HEADER: Avatar + input -->
+    <div class="create-post-header">
+      <img
+        src="{{ request.user.profile.profile_picture.url }}"
+        alt="avatar"
+        class="create-post-avatar"
+      >
 
-        <input type="file" name="image" id="imageInput" accept="image/*" hidden>
-        <input type="file" name="video" id="videoInput" accept="video/*" hidden>
-
-        <div id="preview" class="media-preview"></div>
-
-        <div class="post-actions">
-          <button type="button" onclick="openImage()">📷 Photo</button>
-          <button type="button" onclick="openVideo()">🎥 Video</button>
-          <button type="submit" class="post-btn">Post</button>
-        </div>
-      </form>
+      <textarea
+        name="content"
+        class="post-textarea"
+        placeholder="What's on your mind, {{ request.user.username }}?"
+      ></textarea>
     </div>
+
+    <!-- FILE INPUTS -->
+    <input type="file" name="image" id="imageInput" accept="image/*" hidden>
+    <input type="file" name="video" id="videoInput" accept="video/*" hidden>
+
+    <!-- MEDIA PREVIEW -->
+    <div class="media-preview" id="mediaPreview" style="display:none;">
+      <button type="button" class="media-remove-btn" onclick="clearMedia()">✕</button>
+      <img id="previewImage" style="display:none;">
+      <video id="previewVideo" controls style="display:none;"></video>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="post-actions">
+      <button type="button" class="media-action photo" onclick="openImage()">
+        <span class="icon">📷</span> Photo
+      </button>
+
+      <button type="button" class="media-action video" onclick="openVideo()">
+        <span class="icon">🎥</span> Video
+      </button>
+
+      <button type="submit" class="post-btn">Post</button>
+    </div>
+
+  </form>
+</div>
+
     {% endif %}
 
     <!-- ================= POSTS ================= -->
@@ -158,7 +181,18 @@
     <div class="post-card">
 
       <div class="post-header">
-        <strong>{{ post.user.username }}</strong>
+          <div class="post-user">
+          <img src="{{ request.user.profile.profile_pic.url }}"
+               alt="avatar"
+               class="post-avatar">
+
+          <div class="post-user-info">
+            <strong>{{ post.user.username }}</strong>
+            <span class="post-meta">
+              {{ post.created_at|date:"d M Y" }} · 🌍
+            </span>
+          </div>
+      </div>
 
         {% if post.user == request.user %}
         <div class="post-menu">
