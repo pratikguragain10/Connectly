@@ -73,9 +73,21 @@ body {
 
 /* ================= CENTER ICONS (FACEBOOK STYLE) ================= */
 
+.topbar-center-wrapper {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+
 .topbar-center {
   display: flex;
   gap: 28px;
+  pointer-events: auto;
 }
 
 /* Default icon state */
@@ -112,7 +124,7 @@ body {
   content: "";
   position: absolute;
 
-  bottom: -10px;
+  bottom: -6px;
   left: 0;
   right: 0;
 
