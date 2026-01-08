@@ -15,7 +15,6 @@ body {
 }
 
 /* ================= TOPBAR ================= */
-
 .topbar {
   position: fixed;
   top: 0;
@@ -66,13 +65,14 @@ body {
 
 .topbar-center-wrapper {
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1;
-  width: 500px;
+  inset: 0;              
   display: flex;
   justify-content: center;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
 }
+
 
 /* ================= CENTER ICONS (FACEBOOK STYLE) ================= */
 
@@ -116,7 +116,7 @@ body {
   content: "";
   position: absolute;
 
-  bottom: -4px;
+  bottom: -3px;
   left: 0;
   right: 0;
 
