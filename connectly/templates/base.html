@@ -24,13 +24,25 @@
   </div>
 
   <!-- CENTER (IMPORTANT WRAPPER) -->
-  <div class="topbar-center-wrapper">
-    <div class="topbar-center">
-      <a href="{% url 'home' %}" class="active">🏠</a>
-      <a href="#">👥</a>
-      <a href="#">🔔</a>
-    </div>
-  </div>
+<div class="topbar-center">
+  <a href="{% url 'home' %}"
+     class="{% if request.resolver_match.url_name == 'home' %}active{% endif %}">
+    🏠
+  </a>
+
+  <a href="{% url 'user_search' %}"
+     class="{% if request.resolver_match.url_name == 'user_search' %}active{% endif %}">
+    👥
+  </a>
+
+  <a href="{% url 'home' %}" class="disabled">
+    🎞️
+  </a>
+
+  <a href="{% url 'home' %}" class="disabled">
+    🎮
+  </a>
+</div>
 
   <!-- RIGHT -->
   <div class="topbar-right">

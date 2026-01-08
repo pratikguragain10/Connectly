@@ -33,8 +33,8 @@ body {
   z-index: 1000;
 }
 
+/* ================= LEFT ================= */
 
-/* LEFT */
 .topbar-left {
   display: flex;
   align-items: center;
@@ -52,17 +52,18 @@ body {
   width: 220px;
 }
 
+/* ================= RIGHT ================= */
 
-/* FORCE RIGHT */
 .topbar-right {
-  margin-left: auto;       /* HIS IS IMPORTANT */
+  margin-left: auto; /* IMPORTANT */
   display: flex;
   align-items: center;
   gap: 12px;
   z-index: 2;
 }
 
-/* CENTER WRAPPER (absolute true center) */
+/* ================= CENTER WRAPPER ================= */
+
 .topbar-center-wrapper {
   position: absolute;
   left: 50%;
@@ -70,27 +71,54 @@ body {
   z-index: 1;
 }
 
-/* CENTER ICONS */
+/* ================= CENTER ICONS (FACEBOOK STYLE) ================= */
+
 .topbar-center {
   display: flex;
   gap: 28px;
 }
 
+/* Default icon state */
 .topbar-center a {
+  position: relative;
+
   font-size: 22px;
-  padding: 8px 14px;
+  padding: 10px 18px;
   border-radius: 10px;
+
   text-decoration: none;
-  color: #65676b;
+  color: #65676b; /* Facebook grey */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background 0.15s ease, color 0.15s ease;
 }
 
+/* Hover effect */
 .topbar-center a:hover {
   background: #f0f2f5;
 }
 
+/* ACTIVE TAB */
 .topbar-center a.active {
-  color: #1877f2;
-  background: #e7f3ff;
+  color: #1877f2; /* Facebook blue */
+  background: transparent;
+}
+
+/* Blue underline indicator */
+.topbar-center a.active::after {
+  content: "";
+  position: absolute;
+
+  bottom: -10px;
+  left: 0;
+  right: 0;
+
+  height: 3px;
+  background: #1877f2;
+  border-radius: 3px;
 }
 
 /* ================= LAYOUT ================= */
