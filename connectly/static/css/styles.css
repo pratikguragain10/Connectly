@@ -69,24 +69,16 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
+  width: 500px;
+  display: flex;
+  justify-content: center;
 }
 
 /* ================= CENTER ICONS (FACEBOOK STYLE) ================= */
 
-.topbar-center-wrapper {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-}
-
-
 .topbar-center {
   display: flex;
-  gap: 28px;
+  gap: 48px;
   pointer-events: auto;
 }
 
@@ -124,7 +116,7 @@ body {
   content: "";
   position: absolute;
 
-  bottom: -6px;
+  bottom: -4px;
   left: 0;
   right: 0;
 
